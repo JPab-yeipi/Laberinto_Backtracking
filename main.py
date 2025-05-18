@@ -1,3 +1,4 @@
+#Librerias:
 import turtle as t
 import time
 
@@ -70,7 +71,7 @@ def main():
     t.tracer(0)
     dibujar_laberinto(Laberinto_1)
     t.update()
-    pantalla.exitonclick()
+    t.mainloop()
 
 if __name__ == "__main__":
     main()
