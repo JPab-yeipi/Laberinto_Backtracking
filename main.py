@@ -2,6 +2,7 @@
 import turtle as t
 import time
 import random
+from collections import deque
 
 #Creacion de pantalla:
 pantalla = t.Screen()
@@ -10,80 +11,77 @@ pantalla.bgcolor("#34b800")
 
 #Configuracion basica:
 t.title("Laberinto con backtracking - Jose Pablo Garcia Zamudio")
-t.shape("turtle")
-t.speed(10)
+t.speed("fastest")
+t.shape("arrow")
+t.penup()
 
 #Variables:
 Tamaño_celda = 24
 
 #Laberintos:
-#Laberinto 1 - Curvas locas y un solo camino correcto:
+#Maze 1
 Laberinto_1 = [
-    "#################################",
-    "#S      #       #     #     #   #",
-    "# ##### # ##### # ### # ### # # #",
-    "#     # #     #   #   #   #   # #",
-    "##### # ##### ##### ##### ##### #",
-    "#   # #   #     #   #     #     #",
-    "# # ##### # ##### ### ### # #####",
-    "# #     #   #   #   #   # #     #",
-    "# ##### ##### ### ### # ##### # #",
-    "#     #     #   #     #     # # #",
-    "##### ### # ### # ######### # # #",
-    "#     #   #     #         #   # #",
-    "# ##### ######### ####### ##### #",
-    "#     #   #     # #     #     # #",
-    "# ### ### # ### # ### # ### # # #",
-    "#   #     #   #     # #   # #   #",
-    "# ####### ### ##### ### ### ### #",
-    "#             #         #     G #",
-    "#################################"
+    "#####################",
+    "#S#       #         #",
+    "# # ##### # ####### #",
+    "# # #   # # #     # #",
+    "# # # # # # # ### # #",
+    "# # # # # #   # # # #",
+    "# # # # # ### # # # #",
+    "#   #         # # #G#",
+    "#####################"
 ]
 
-#Laberinto 2 - Rutas falsas y cruces multiples:
+#Maze 2
 Laberinto_2 = [
-    "#################################",
-    "#S    #     #     #   #     #   #",
-    "### ### ### ### ### ### ### ### #",
-    "#   #   #   #     #   #   #   # #",
-    "# ### ##### ### ### ### ### # # #",
-    "#     #     # #     #     # #   #",
-    "##### # ### # ####### ### # #####",
-    "#   # #   #   #   #     # #     #",
-    "# # # ### ##### # ##### # ### # #",
-    "# #   #   #   # #     # #   # # #",
-    "##### # ### ### ### ### ### # # #",
-    "#     #   #   #   #     #   # # #",
-    "# ### ### ### ##### ##### ### # #",
-    "#   #                 #     #   #",
-    "### # ### ### ### ### ### #######",
-    "#   # #     #   #   #   #       #",
-    "# ### ##### ### ### # ### ##### #",
-    "#         #     #   #     #   G #",
-    "#################################"
-]
+    "############",
+    "#S         #",
+    "########## #",
+    "#          #",
+    "# ##########",
+    "# #        #",
+    "# ######## #",
+    "#          #",
+    "# ##########",
+    "#          #",
+    "# ###### # #",
+    "#        # #",
+    "# ######## #",
+    "#G#        #",
+    "############",]
 
-#Laberinto 3 - Muchos recovecos:
+#Maze 3
 Laberinto_3 = [
-    "#################################",
-    "#S  #   #       #   #     #     #",
-    "### # ### ##### # ### ### ##### #",
-    "#   #     #   # #     #   #   # #",
-    "# ####### # # # ##### # ### # # #",
-    "#         # # #     # #   # #   #",
-    "########### ##### # ### # #######",
-    "#       #     #   #   # #       #",
-    "# ##### ##### ### ### ### ##### #",
-    "#   #       #     #     # #   # #",
-    "### # ##### # ### ##### # # # # #",
-    "#   #     #   #     #   # # # # #",
-    "# ##### # ### ##### ### ### # # #",
-    "#     # #   #     #     #   #   #",
-    "# ### ##### ### ##### ### ##### #",
-    "#   #       #   #   #     #     #",
-    "##### ##### ### # ##### ### ### #",
-    "#     #   #     #         #   G #",
-    "#################################"
+    "################################",
+    "#S      #     #                #",
+    "# ##### # # # # #### ######### #",
+    "#   #   # #   #    # # #     # #",
+    "# ### ### # # # ## ### # ### # #",
+    "#   #   # # # ###  #     #     #",
+    "### ### # # # #   ## ##### ### #",
+    "#   #   # # # # ###  #     #   #",
+    "# ##### # # # # #   ## ##### ###",
+    "# #     # # #   # ###  #     # #",
+    "# # ##### # # ###     ## ##### #",
+    "# #     # #   # # ### ## # # # #",
+    "# ##### # ### #   # # #  # # # #",
+    "# #   # #   ####### # ##       #",
+    "#   ### # #   #G       # #######",
+    "# # #   # ### ##########       #",
+    "### ## ##     #   #    ### ### #",
+    "#    #    ##### # # ##   #     #",
+    "# #########   ###   #### ## ####",
+    "#           ### ### #### ## ####",
+    "# ###### ##   # ###   #        #",
+    "# #    #  ### #   # # ##########",
+    "#   ## ##  ## # # # #          #",
+    "# ####  ##    # # ############ #",
+    "# #   #  #### # # #            #",
+    "# # # ## #### # # ### ##########",
+    "# # #  #    # # # #            #",
+    "# # ## #### # # # ############ #",
+    "# #             #              #",
+    "################################"
 ]
 
 #Laberinto 4 - Pasillos angostos y vueltas falsas:
@@ -143,7 +141,6 @@ def dibujar_cuadrado(x, y, color):
     #dibujo del cuadrado:
     t.begin_fill()
     for i in range(4):
-        t.pendown()
         t.forward(Tamaño_celda)
         t.right(90)
     t.end_fill()
@@ -180,7 +177,6 @@ def encontrar_inicio(laberinto):
                 t.penup()
                 t.goto(screen_x + Tamaño_celda // 2, screen_y - Tamaño_celda // 2)
                 t.setheading(0)
-                t.pendown()
 
                 return x, y
      
@@ -201,8 +197,14 @@ def orientacion_turtle(direccion):
 def buscar_meta(laberinto, x, y, visitados, ruta_actual):
     if laberinto[y][x] == 'G':
         ruta_actual.append((x, y))
-        t.dot(10, "blue")
+        screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
+        screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
+        t.goto(screen_x, screen_y)
+        t.dot(10, "blue")  # Marca exacta sobre G
+        t.hideturtle()
+        pantalla.update()
         return True
+
 
     if (x, y) in visitados or laberinto[y][x] == '#':
         return False
@@ -214,6 +216,8 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
     screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
     screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
     t.goto(screen_x, screen_y)
+    t.dot(10, "green")  # Celda explorada
+    pantalla.update()
     time.sleep(0.02)
 
     # Direcciones: derecha, abajo, izquierda, arriba
@@ -231,7 +235,7 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
                     return True
 
     # Punto sin salida (gris)
-    t.dot(8, "gray")
+    t.dot(10, "orange")
 
     # Retroceso físico
     ruta_actual.pop()
@@ -244,18 +248,38 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
         screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + paso_anterior[0] * Tamaño_celda + Tamaño_celda // 2
         screen_y = len(laberinto) * Tamaño_celda // 2 - paso_anterior[1] * Tamaño_celda - Tamaño_celda // 2
         t.goto(screen_x, screen_y)
+        t.dot(10, "green")  # Camino correcto
+        pantalla.update()
         time.sleep(0.02)
 
     return False
 
+def camino_mas_corto(laberinto, inicio, meta):
+    queue = deque()
+    queue.append((inicio, [inicio]))
+    visitados = set()
+    visitados.add(inicio)
+
+    while queue:
+        (x, y), ruta = queue.popleft()
+
+        if (x, y) == meta:
+            return ruta
+        
+        for dx, dy in [(1,0), (0, 1), (-1, 0), (0, -1)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= ny < len(laberinto) and 0 <= nx < len(laberinto[0]):
+                if laberinto[ny][nx] != '#' and (nx, ny) not in visitados:
+                    queue.append(((nx, ny), ruta + [(nx, ny)]))
+                    visitados.add((nx, ny))
 
 def main():
     t.tracer(0)
-    Laberintos = [[Laberinto_1, "Laberinto 1 - Curvas locas y un solo camino correcto"],
-                  [Laberinto_2, "Laberinto 2 - Rutas falsas y cruces múltiples"],
-                  [Laberinto_3, "Laberinto 3 - Muchos recovecos"],
-                  [Laberinto_4, "Laberinto 4 - Pasillos angostos y vueltas falsas"],
-                  [Laberinto_5, "Laberinto 5 - Caminos válidos múltiples"]
+    Laberintos = [[Laberinto_1, "Maze 1"],
+                  [Laberinto_2, "Maze 2"],
+                  [Laberinto_3, "Maze 3"]
+                  #[Laberinto_4, "Laberinto 4 - Pasillos angostos y vueltas falsas"],
+                  #[Laberinto_5, "Laberinto 5 - Caminos válidos múltiples"]
                  ]
     The_Maze = random.choice(Laberintos)
     laberinto = The_Maze[0]
@@ -270,6 +294,7 @@ def main():
 
     dibujar_laberinto(laberinto)
 
+    t.tracer(1)
     x_inicio, y_inicio = encontrar_inicio(laberinto)
 
     ruta_actual = []
@@ -280,7 +305,18 @@ def main():
     for paso in ruta_actual:
         print(paso)
 
-    t.update()
+    x_meta, y_meta = ruta_actual[-1]
+    ruta_corta = camino_mas_corto(laberinto, (x_inicio, y_inicio), (x_meta, y_meta))
+
+    time.sleep(1)
+    for (x, y) in ruta_corta:
+        screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
+        screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
+        t.goto(screen_x, screen_y)
+        t.dot(10, "blue")
+        pantalla.update
+        time.sleep(0.05)
+
     t.mainloop()
 
 if __name__ == "__main__":
