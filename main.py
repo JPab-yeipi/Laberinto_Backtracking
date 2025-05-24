@@ -1,42 +1,32 @@
 #Librerias:
 import turtle as t
 import time
-import random
 import maps
+import tkinter as tk
 from collections import deque
-
-#Creacion de pantalla:
-pantalla = t.Screen()
-pantalla.setup(width=1050, height=700)
-pantalla.bgcolor("#34b800")
-
-#Configuracion basica:
-t.title("Laberinto con backtracking - Jose Pablo Garcia Zamudio")
-t.speed("fastest")
-t.shape("arrow")
-t.penup()
+from turtle import RawTurtle, ScrolledCanvas
 
 #Variables:
-Tamaño_celda = 24
+Tamaño_celda = 15
 
 #Funciones:
 #Funcion para dibujar cuadrados:
-def dibujar_cuadrado(x, y, color):
+def dibujar_cuadrado(turtle, x, y, color):
 
     #Configuracion basica del cuadrado:
-    t.color(color)
-    t.goto(x, y)
+    turtle.color(color)
+    turtle.goto(x, y)
 
     #dibujo del cuadrado:
-    t.begin_fill()
+    turtle.begin_fill()
     for i in range(4):
-        t.forward(Tamaño_celda)
-        t.right(90)
-    t.end_fill()
-    t.penup()
+        turtle.forward(Tamaño_celda)
+        turtle.right(90)
+    turtle.end_fill()
+    turtle.penup()
 
 #Funcion para dibujar laberintos:
-def dibujar_laberinto(laberinto):
+def dibujar_laberinto(turtle, laberinto):
     for y in range(len(laberinto)):
         for x in range(len(laberinto[y])):
             screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda
@@ -44,18 +34,18 @@ def dibujar_laberinto(laberinto):
             celda = laberinto[y][x]
 
             if celda == '#':
-                dibujar_cuadrado(screen_x, screen_y, "black")
+                dibujar_cuadrado(turtle, screen_x, screen_y, "black")
 
             elif celda == 'G':
-                dibujar_cuadrado(screen_x, screen_y, "green")
+                dibujar_cuadrado(turtle, screen_x, screen_y, "green")
 
             elif celda == 'S':
-                dibujar_cuadrado(screen_x, screen_y, "blue")
+                dibujar_cuadrado(turtle, screen_x, screen_y, "blue")
 
             else:
-                dibujar_cuadrado(screen_x, screen_y, "white")
+                dibujar_cuadrado(turtle, screen_x, screen_y, "white")
  
-def encontrar_inicio(laberinto):
+def encontrar_inicio(turtle, laberinto):
     for y in range(len(laberinto)):
         for x in range(len(laberinto[y])):
             if laberinto[y][x] == 'S':
@@ -63,37 +53,36 @@ def encontrar_inicio(laberinto):
                 screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda
                 screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda
 
-                t.penup()
-                t.goto(screen_x + Tamaño_celda // 2, screen_y - Tamaño_celda // 2)
-                t.setheading(0)
+                turtle.penup()
+                turtle.goto(screen_x + Tamaño_celda // 2, screen_y - Tamaño_celda // 2)
+                turtle.setheading(0)
 
                 return x, y
      
     raise ValueError("No se encontró el punto de inicio en el laberinto.")
 
-def orientacion_turtle(direccion):
+def orientacion_turtle(turtle, direccion):
 
     if direccion == (1,0):
-        t.setheading(0)
+        turtle.setheading(0)
     elif direccion == (0, 1):
-        t.setheading(270)
+        turtle.setheading(270)
     elif direccion == (-1, 0):
-        t.setheading(180)
+        turtle.setheading(180)
     elif direccion == (0, -1):
-        t.setheading(90)
+        turtle.setheading(90)
 
 
-def buscar_meta(laberinto, x, y, visitados, ruta_actual):
+def buscar_meta(turtle, laberinto, x, y, visitados, ruta_actual):
     if laberinto[y][x] == 'G':
         ruta_actual.append((x, y))
         screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
         screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
-        t.goto(screen_x, screen_y)
-        t.dot(10, "blue")  # Marca exacta sobre G
-        t.hideturtle()
-        pantalla.update()
+        turtle.goto(screen_x, screen_y)
+        turtle.dot(10, "blue")  # Marca exacta sobre G
+        turtle.hideturtle()
+        turtle.getscreen().update()
         return True
-
 
     if (x, y) in visitados or laberinto[y][x] == '#':
         return False
@@ -104,9 +93,9 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
     # Mover la tortuga a la celda actual
     screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
     screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
-    t.goto(screen_x, screen_y)
-    t.dot(10, "green")  # Celda explorada
-    pantalla.update()
+    turtle.goto(screen_x, screen_y)
+    turtle.dot(10, "green")  # Celda explorada
+    turtle.getscreen().update()
     time.sleep(0.02)
 
     # Direcciones: derecha, abajo, izquierda, arriba
@@ -117,14 +106,14 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
 
         if 0 <= nuevo_y < len(laberinto) and 0 <= nuevo_x < len(laberinto[0]):
             if laberinto[nuevo_y][nuevo_x] != '#' and (nuevo_x, nuevo_y) not in visitados:
-                orientacion_turtle((dx, dy))
+                orientacion_turtle(turtle, (dx, dy))
 
-                if buscar_meta(laberinto, nuevo_x, nuevo_y, visitados, ruta_actual):
-                    t.dot(10, "blue")
+                if buscar_meta(turtle, laberinto, nuevo_x, nuevo_y, visitados, ruta_actual):
+                    turtle.dot(10, "blue")
                     return True
 
     # Punto sin salida (gris)
-    t.dot(10, "orange")
+    turtle.dot(10, "orange")
 
     # Retroceso físico
     ruta_actual.pop()
@@ -132,13 +121,13 @@ def buscar_meta(laberinto, x, y, visitados, ruta_actual):
         paso_anterior = ruta_actual[-1]
         dx = paso_anterior[0] - x
         dy = paso_anterior[1] - y
-        orientacion_turtle((dx, dy))
+        orientacion_turtle(turtle, (dx, dy))
 
         screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + paso_anterior[0] * Tamaño_celda + Tamaño_celda // 2
         screen_y = len(laberinto) * Tamaño_celda // 2 - paso_anterior[1] * Tamaño_celda - Tamaño_celda // 2
-        t.goto(screen_x, screen_y)
-        t.dot(10, "green")  # Camino correcto
-        pantalla.update()
+        turtle.goto(screen_x, screen_y)
+        turtle.dot(10, "green")  # Camino correcto
+        turtle.getscreen().update()
         time.sleep(0.02)
 
     return False
@@ -163,64 +152,95 @@ def camino_mas_corto(laberinto, inicio, meta):
                     visitados.add((nx, ny))
     return []
 
-def main():
-    t.tracer(0)
-    Laberintos = [[maps.MAZE_1, "Maze 1"],
-                  [maps.MAZE_2, "Maze 2"],
-                  [maps.MAZE_3, "Maze 3"],
-                  [maps.MAZE_4, "Maze 4"],
-                  [maps.MAZE_5, "Maze 5"]
-                 ]
-    The_Maze = random.choice(Laberintos)
-    laberinto = The_Maze[0]
-    nombre = The_Maze[1]
+def mostrar_laberinto(nombre):
+    ventana_laberinto = tk.Tk()
+    ventana_laberinto.title(f'Laberinto - {nombre}')
+    ventana_laberinto.geometry("1000x700")
+    ventana_laberinto.configure(bg="white")
 
-    titulo = t.Turtle()
-    titulo.hideturtle()
-    titulo.penup()
-    titulo.color("black")
-    titulo.goto(0, 280)
-    titulo.write(nombre, align="center", font=("Arial", 40, "bold"))
+    canvas_turtle = ScrolledCanvas(ventana_laberinto, width=600, height=600)
+    canvas_turtle.place(x=50, y=50)
 
-    dibujar_laberinto(laberinto)
+    turtle = RawTurtle(canvas_turtle)
+    turtle.speed(0)
+    turtle.penup()
+    turtle.hideturtle()
+    turtle._tracer(0, 0)  # ❗ Esto evita que se vea la animación de construcción
 
-    t.tracer(1)
-    x_inicio, y_inicio = encontrar_inicio(laberinto)
+    laberinto = maps.MAZE_DICC[nombre]
+
+    # Dibuja laberinto sin animación
+    dibujar_laberinto(turtle, laberinto)
+    turtle._update()  # ❗ Dibuja todo de golpe
+
+    # Ya puedes continuar como normalmente con la búsqueda
+    x_inicio, y_inicio = encontrar_inicio(turtle, laberinto)
 
     ruta_actual = []
     visitados = set()
-    buscar_meta(laberinto, x_inicio, y_inicio, visitados, ruta_actual)
-
-    print("Ruta encontrada: ")
-    for paso in ruta_actual:
-        print(paso)
+    buscar_meta(turtle, laberinto, x_inicio, y_inicio, visitados, ruta_actual)
 
     x_meta, y_meta = ruta_actual[-1]
     ruta_corta = camino_mas_corto(laberinto, (x_inicio, y_inicio), (x_meta, y_meta))
 
-    time.sleep(1)
-    t.showturtle()
+    time.sleep(1)  # Espera tras la búsqueda
 
+    turtle.showturtle()
     for i in range(len(ruta_corta)):
         x, y = ruta_corta[i]
-        
-        # Detectar dirección (excepto en el primer paso)
+
+        # Orientar tortuga
         if i > 0:
             x_ant, y_ant = ruta_corta[i - 1]
             dx = x - x_ant
             dy = y - y_ant
-            orientacion_turtle((dx, dy))
+            orientacion_turtle(turtle, (dx, dy))
 
-        # Mover la tortuga y pintar
+        # Mover y pintar
         screen_x = -len(laberinto[0]) * Tamaño_celda // 2 + x * Tamaño_celda + Tamaño_celda // 2
         screen_y = len(laberinto) * Tamaño_celda // 2 - y * Tamaño_celda - Tamaño_celda // 2
-        t.goto(screen_x, screen_y)
-        t.dot(10, "blue")
-        
-        pantalla.update()
+        turtle.goto(screen_x, screen_y)
+        turtle.dot(10, "blue")
+        turtle.getscreen().update()
         time.sleep(0.05)
-        
-    t.mainloop()
+
+    ventana_laberinto.mainloop()
+
+def main():
+
+    menu_principal = tk.Tk()
+    menu_principal.title("Menu de laberintos")
+    menu_principal.geometry("400x650")
+    menu_principal.configure(bg="#34b800")
+
+    #Agregar texto dentro de la ventana
+    titulo = tk.Label(
+        menu_principal,
+        text="MENU DE LABERINTOS",
+        font=("Arial", 30, "bold"),
+        bg="#34b800",
+        fg="black"
+    )
+    titulo.pack(pady=20)
+
+    def abrir_ventana_laberinto(nombre):
+        menu_principal.destroy()
+        mostrar_laberinto(nombre)
+
+    for nombre in maps.MAZE_DICC:
+        boton = tk.Button(
+            menu_principal,
+            text=nombre,
+            font=("Arial", 16, "bold"),
+            width=20,
+            height=2,    
+            fg="black",            
+            bd=2,
+            command=lambda n=nombre: abrir_ventana_laberinto(n)
+        )
+        boton.pack(pady=5)
+
+    menu_principal.mainloop()
 
 if __name__ == "__main__":
     main()
