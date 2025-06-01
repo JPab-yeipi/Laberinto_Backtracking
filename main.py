@@ -1,4 +1,4 @@
-'''Version 3.6    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
+'''Version 4.0    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
 #Librerias ----------------------------------------------------------------------------------------------
 import turtle as t
 import time
@@ -32,6 +32,8 @@ botones_VentanaLaberinto = [
 botones_random = [
         ("Easy", 1, 1, "Verde"), ("Medium", 2, 1, "Naranja"), ("Hard", 3, 1, "Rojo")
 ]
+
+boton_create = [("Create", 0, 0, "Morado")]
 
 #Funciones ----------------------------------------------------------------------------------------------
 #Funcion para dibujar cuadrados:
@@ -195,6 +197,10 @@ def camino_mas_corto(laberinto, inicio, meta):
                     visitados.add((nx, ny))
     return []
 
+#Funcion para crear laberinto random:
+def crear_random_maze(dificultad, alto, ancho, bifurcaciones):
+    pass
+
 #Funcion que imprime el laberinto a resolver:
 def mostrar_laberinto(nombre, turtle):
 
@@ -331,74 +337,139 @@ def crear_ventana_laberinto(nombre_laberinto):
 
     ventana_laberinto.mainloop()
     return ventana_laberinto, turtle
-#'''
-def random_Maze():
+
+#Funcion que crea la ventana de ajustes para crear el laberinto random:
+def ventana_random_Maze():
     ventana_random = tk.Tk()
     ventana_random.title('Random Maze Settings')
-    ventana_random.geometry("1000x670")
+    ventana_random.geometry("1000x540")
     ventana_random.configure(bg="#292826")
     ventana_random.resizable(False, False)
 
+    #Texto para elegir la dificultad
     etiqueta_titulo = tk.Label(ventana_random, text="Elige la dificultad del laberinto:", font=fuente, fg="white", bg="#292826")
     etiqueta_titulo.pack(pady=20)
 
-    frame_canvas = tk.Frame(ventana_random, bg="#292826")
-    frame_canvas.place(x=0, y=70, width=1000, height=130)
+    #frame para los botones de dificultad
+    frame_dificultad = tk.Frame(ventana_random, bg="#292826")
+    frame_dificultad.place(x=40, y=70, width=1000, height=130)
 
-    canvas = tk.Canvas(frame_canvas, width=1000, height=130, bg="#292826", highlightthickness=0)
-    canvas.pack()
+    canvas_dificultad = tk.Canvas(frame_dificultad, width=1000, height=130, bg="#292826", highlightthickness=0)
+    canvas_dificultad.pack()
 
     botones_on = {color: PhotoImage(file=os.path.join(RUTA_BOTONES, f'BtnMaze{color}On.png')) for color in colores}
     botones_off = {color: PhotoImage(file=os.path.join(RUTA_BOTONES, f'BtnMaze{color}Off.png')) for color in colores}
 
-    espacio_x = 320
+    espacio_x = 300
     espacio_y = 65
 
-    # Guarda el estado del botón seleccionado
     estado_seleccion = {"actual": None}
-
-    # Mapea nombre -> ids para poder cambiar las imágenes
     botones_ids = {}
 
+    #Botones de dificultad
     for texto, col, fila, color in botones_random:
         x = espacio_x * col - espacio_x / 2
         y = espacio_y * fila - espacio_y / 2
 
-        imagen_id = canvas.create_image(x, y + 2, image=botones_off[color])
-        sombra_id = canvas.create_text(x + 2, y + 2, text=texto, font=fuente, fill="black")
-        texto_id = canvas.create_text(x, y, text=texto, font=fuente, fill="white")
+        imagen_id = canvas_dificultad.create_image(x, y + 2, image=botones_off[color])
+        sombra_id = canvas_dificultad.create_text(x + 2, y + 2, text=texto, font=fuente, fill="black")
+        texto_id = canvas_dificultad.create_text(x, y, text=texto, font=fuente, fill="white")
 
         botones_ids[texto] = (imagen_id, texto_id, sombra_id, color)
 
         def al_soltar(event, nombre_boton=texto):
-            # Si ya hay un botón seleccionado, lo regresa a off
             if estado_seleccion["actual"] and estado_seleccion["actual"] != nombre_boton:
-                img_id, txt_id, sombra_id, col_anterior = botones_ids[estado_seleccion["actual"]]
-                canvas.itemconfig(img_id, image=botones_off[col_anterior])
-                canvas.itemconfig(txt_id, fill="white")
-                canvas.move(txt_id, 0, -6)
-                canvas.move(sombra_id, 0, -6)
+                img_id, txt_id, sombra_id, col_ant = botones_ids[estado_seleccion["actual"]]
+                canvas_dificultad.itemconfig(img_id, image=botones_off[col_ant])
+                canvas_dificultad.itemconfig(txt_id, fill="white")
+                canvas_dificultad.move(txt_id, 0, -6)
+                canvas_dificultad.move(sombra_id, 0, -6)
 
-            # Actualiza el nuevo botón como presionado
             img_id, txt_id, sombra_id, col = botones_ids[nombre_boton]
-            canvas.itemconfig(img_id, image=botones_on[col])
-            canvas.itemconfig(txt_id, fill="gray")
-            canvas.move(txt_id, 0, 6)
-            canvas.move(sombra_id, 0, 6)
-
-            # Guarda como seleccionado actual
+            canvas_dificultad.itemconfig(img_id, image=botones_on[col])
+            canvas_dificultad.itemconfig(txt_id, fill="gray")
+            canvas_dificultad.move(txt_id, 0, 6)
+            canvas_dificultad.move(sombra_id, 0, 6)
             estado_seleccion["actual"] = nombre_boton
 
-            # Aquí podrías hacer algo con la selección:
-            print(f"Seleccionado: {nombre_boton}")
+            #Liberar botón Create si sigue bloqueado
+            if "Create" in botones_ids:
+                img_c, txt_c, sombra_c, col_c = botones_ids["Create"]
+                if canvas_create.itemcget(txt_c, "fill") == "gray":
+                    canvas_create.itemconfig(img_c, image=botones_off[col_c])
+                    canvas_create.itemconfig(txt_c, fill="white")
+                    canvas_create.move(txt_c, 0, -6)
+                    canvas_create.move(sombra_c, 0, -6)
 
-        # Bind para cada elemento del botón
         for item in [imagen_id, texto_id, sombra_id]:
-            canvas.tag_bind(item, "<ButtonRelease-1>", al_soltar)
+            canvas_dificultad.tag_bind(item, "<ButtonRelease-1>", al_soltar)
+
+    #Sliders para elegir el tamaño y las bifurcaciones
+    tk.Label(ventana_random, text="Elige las dimensiones del laberinto:", font=fuente, fg="white", bg="#292826").place(x=300, y=170)
+
+    tk.Label(ventana_random, text="Alto:", font=fuente, fg="white", bg="#292826").place(x=180, y=230)
+    slider_alto = tk.Scale(ventana_random, from_=15, to=40, orient="horizontal", length=500, bg="#292826", fg="white", troughcolor="#81F1CA", highlightthickness=0)
+    slider_alto.set(20)
+    slider_alto.place(x=240, y=220)
+
+    tk.Label(ventana_random, text="Ancho:", font=fuente, fg="white", bg="#292826").place(x=155, y=280)
+    slider_ancho = tk.Scale(ventana_random, from_=15, to=40, orient="horizontal", length=500, bg="#292826", fg="white", troughcolor="#FFF152", highlightthickness=0)
+    slider_ancho.set(20)
+    slider_ancho.place(x=240, y=270)
+
+    tk.Label(ventana_random, text="Elige cantidad de bifurcaciones:", font=fuente, fg="white", bg="#292826").place(x=320, y=340)
+    slider_bif = tk.Scale(ventana_random, from_=1, to=10, orient="horizontal", length=500, bg="#292826", fg="white", troughcolor="#63DCF5", highlightthickness=0)
+    slider_bif.set(5)
+    slider_bif.place(x=240, y=380)
+
+    #Canvas para el botón Create abajo
+    frame_create = tk.Frame(ventana_random, bg="#292826")
+    frame_create.place(x=0, y=450, width=1000, height=100)
+
+    canvas_create = tk.Canvas(frame_create, width=1000, height=100, bg="#292826", highlightthickness=0)
+    canvas_create.pack()
+
+    # Botón Create
+    for texto, col, fila, color in boton_create:
+        x = 800
+        y = 40
+
+        imagen_id = canvas_create.create_image(x, y + 2, image=botones_on[color])
+        sombra_id = canvas_create.create_text(x + 2, y + 2, text=texto, font=fuente, fill="black")
+        texto_id = canvas_create.create_text(x, y, text=texto, font=fuente, fill="gray")
+
+        botones_ids[texto] = (imagen_id, texto_id, sombra_id, color)
+
+        def al_soltar_create(event, nombre_boton=texto):
+            if canvas_create.itemcget(texto_id, "fill") == "gray":
+                return
+
+            canvas_create.itemconfig(imagen_id, image=botones_on[color])
+            canvas_create.itemconfig(texto_id, fill="gray")
+            canvas_create.move(texto_id, 0, 6)
+            canvas_create.move(sombra_id, 0, 6)
+
+            ventana_random.after(150, lambda: (
+                canvas_create.itemconfig(imagen_id, image=botones_off[color]),
+                canvas_create.itemconfig(texto_id, fill="white"),
+                canvas_create.move(texto_id, 0, -6),
+                canvas_create.move(sombra_id, 0, -6),
+                crear_laberinto()
+            ))
+
+        for item in [imagen_id, texto_id, sombra_id]:
+            canvas_create.tag_bind(item, "<ButtonRelease-1>", al_soltar_create)
+
+    #Función de creación
+    def crear_laberinto():
+        dificultad = estado_seleccion["actual"]
+        alto = slider_alto.get()
+        ancho = slider_ancho.get()
+        bif = slider_bif.get()
+        print(f"Generando laberinto con dificultad={dificultad}, alto={alto}, ancho={ancho}, bifurcaciones={bif}")
+        #crear_random_maze()
 
     ventana_random.mainloop()
-
-#'''
 
 #Funcion main (llama las funciones anteriores en el orden deseado) --------------------------------------
 def menu_principal():
@@ -516,7 +587,7 @@ def menu_principal():
 
     def abrir_ventana_random():
         menu_principal.destroy()
-        random_Maze()
+        ventana_random_Maze()
 
     #Texto con derechos de autor en el inferior de la ventana:
     derechos_autor = tk.Label(
