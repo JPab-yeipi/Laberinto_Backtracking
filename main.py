@@ -18,16 +18,19 @@ RUTA_PREVIEWS = os.path.join("Assets", "Preview")
 Tamaño_celda = 15
 #Fuente en variable para que concuerden los textos:
 fuente = ("Arial Black", 20)
-colores = ["Rojo", "Azul", "Amarillo", "Verde"]
+colores = ["Rojo", "Azul", "Amarillo", "Verde", "Morado", "Naranja"]
 botones_MenuPrincipal = [
-        ("Maze 1", 1, 1, "Verde"), ("Maze 2", 2, 1, "Azul"),
-        ("Maze 3", 1, 2, "Rojo"), ("Maze 4", 2, 2, "Amarillo"),
-        ("Maze 5", 1, 3, "Azul"), ("Maze 6", 2, 3, "Verde"),
-        ("Maze 7", 1, 4, "Amarillo"),("Your Maze", 2, 4, "Rojo")
+        ("Maze 1", 1, 1, "Verde"), ("Maze 2", 2, 1, "Verde"),
+        ("Maze 3", 1, 2, "Rojo"), ("Maze 4", 2, 2, "Rojo"),
+        ("Maze 5", 1, 3, "Azul"), ("Maze 6", 2, 3, "Azul"),
+        ("Random Maze", 1, 4, "Morado"),("Your Maze", 2, 4, "Naranja")
 ]
 botones_VentanaLaberinto = [
         ("Return", 1, 1, "Rojo"), ("Start/Pause", 2, 1, "Amarillo"), 
         ("Restart", 3, 1, "Verde"), ("Extra", 4, 1, "Azul")
+]
+botones_random = [
+        ("Easy", 1, 1, "Verde"), ("Medium", 2, 1, "Naranja"), ("Hard", 3, 1, "Rojo")
 ]
 
 #Funciones ----------------------------------------------------------------------------------------------
@@ -311,7 +314,14 @@ def crear_ventana_laberinto(nombre_laberinto):
             elif nombre_boton == "Start/Pause":
                 mostrar_laberinto(nombre_laberinto, turtle)
             elif nombre_boton == "Restart":
-                pass
+                turtle.clear()
+                turtle.reset()
+                turtle.speed("fastest")
+                turtle.penup()
+                turtle.hideturtle()
+                turtle._tracer(0, 0)
+                turtle.screen.bgcolor("#292826")
+                mostrar_laberinto(nombre_laberinto, turtle)  # Redibuja el laberinto
             elif nombre_boton == "Extra":
                 pass
 
@@ -321,6 +331,74 @@ def crear_ventana_laberinto(nombre_laberinto):
 
     ventana_laberinto.mainloop()
     return ventana_laberinto, turtle
+#'''
+def random_Maze():
+    ventana_random = tk.Tk()
+    ventana_random.title('Random Maze Settings')
+    ventana_random.geometry("1000x670")
+    ventana_random.configure(bg="#292826")
+    ventana_random.resizable(False, False)
+
+    etiqueta_titulo = tk.Label(ventana_random, text="Elige la dificultad del laberinto:", font=fuente, fg="white", bg="#292826")
+    etiqueta_titulo.pack(pady=20)
+
+    frame_canvas = tk.Frame(ventana_random, bg="#292826")
+    frame_canvas.place(x=0, y=70, width=1000, height=130)
+
+    canvas = tk.Canvas(frame_canvas, width=1000, height=130, bg="#292826", highlightthickness=0)
+    canvas.pack()
+
+    botones_on = {color: PhotoImage(file=os.path.join(RUTA_BOTONES, f'BtnMaze{color}On.png')) for color in colores}
+    botones_off = {color: PhotoImage(file=os.path.join(RUTA_BOTONES, f'BtnMaze{color}Off.png')) for color in colores}
+
+    espacio_x = 320
+    espacio_y = 65
+
+    # Guarda el estado del botón seleccionado
+    estado_seleccion = {"actual": None}
+
+    # Mapea nombre -> ids para poder cambiar las imágenes
+    botones_ids = {}
+
+    for texto, col, fila, color in botones_random:
+        x = espacio_x * col - espacio_x / 2
+        y = espacio_y * fila - espacio_y / 2
+
+        imagen_id = canvas.create_image(x, y + 2, image=botones_off[color])
+        sombra_id = canvas.create_text(x + 2, y + 2, text=texto, font=fuente, fill="black")
+        texto_id = canvas.create_text(x, y, text=texto, font=fuente, fill="white")
+
+        botones_ids[texto] = (imagen_id, texto_id, sombra_id, color)
+
+        def al_soltar(event, nombre_boton=texto):
+            # Si ya hay un botón seleccionado, lo regresa a off
+            if estado_seleccion["actual"] and estado_seleccion["actual"] != nombre_boton:
+                img_id, txt_id, sombra_id, col_anterior = botones_ids[estado_seleccion["actual"]]
+                canvas.itemconfig(img_id, image=botones_off[col_anterior])
+                canvas.itemconfig(txt_id, fill="white")
+                canvas.move(txt_id, 0, -6)
+                canvas.move(sombra_id, 0, -6)
+
+            # Actualiza el nuevo botón como presionado
+            img_id, txt_id, sombra_id, col = botones_ids[nombre_boton]
+            canvas.itemconfig(img_id, image=botones_on[col])
+            canvas.itemconfig(txt_id, fill="gray")
+            canvas.move(txt_id, 0, 6)
+            canvas.move(sombra_id, 0, 6)
+
+            # Guarda como seleccionado actual
+            estado_seleccion["actual"] = nombre_boton
+
+            # Aquí podrías hacer algo con la selección:
+            print(f"Seleccionado: {nombre_boton}")
+
+        # Bind para cada elemento del botón
+        for item in [imagen_id, texto_id, sombra_id]:
+            canvas.tag_bind(item, "<ButtonRelease-1>", al_soltar)
+
+    ventana_random.mainloop()
+
+#'''
 
 #Funcion main (llama las funciones anteriores en el orden deseado) --------------------------------------
 def menu_principal():
@@ -384,7 +462,20 @@ def menu_principal():
             canvas.itemconfig(txt, fill="white")
             canvas.move(txt, 0, -6)
             canvas.move(sombra, 0, -6)
-            abrir_ventana_laberinto(nombre)
+            if nombre == "Random Maze":
+                abrir_ventana_random()
+            elif nombre == "Your Maze":
+                pass
+            else:
+                abrir_ventana_laberinto(nombre)
+
+        #Cambia el texto a gris cuando el mouse entra
+        def resaltar_texto(event, txt=texto_id):  
+            canvas.itemconfig(txt, fill="yellow")    
+
+        #Restaura el texto a blanco cuando el mouse sale
+        def restaurar_texto(event, txt=texto_id):  
+            canvas.itemconfig(txt, fill="white")   
 
         #Funciones para mostrar/ocultar preview según el botón
         def mostrar_preview(event, nombre=texto):
@@ -403,10 +494,18 @@ def menu_principal():
         def ocultar_preview(event):
             label_preview.place_forget()
 
+        def al_entrar(event, nombre=texto, txt=texto_id):  
+            resaltar_texto(event, txt=txt)                 
+            mostrar_preview(event, nombre=nombre)          
+
+        def al_salir(event, txt=texto_id):                
+            restaurar_texto(event, txt=txt)                
+            ocultar_preview(event)                         
+
         for item in [imagen_id, texto_id, sombra_id]:
-            canvas.tag_bind(item, "<Enter>", mostrar_preview)
+            canvas.tag_bind(item, "<Enter>", al_entrar)           
             canvas.tag_bind(item, "<Motion>", mover_preview) 
-            canvas.tag_bind(item, "<Leave>", ocultar_preview)
+            canvas.tag_bind(item, "<Leave>", al_salir)           
             canvas.tag_bind(item, "<ButtonPress-1>", al_presionar)
             canvas.tag_bind(item, "<ButtonRelease-1>", al_soltar)
 
@@ -414,6 +513,10 @@ def menu_principal():
     def abrir_ventana_laberinto(nombre):
         menu_principal.destroy()
         crear_ventana_laberinto(nombre)
+
+    def abrir_ventana_random():
+        menu_principal.destroy()
+        random_Maze()
 
     #Texto con derechos de autor en el inferior de la ventana:
     derechos_autor = tk.Label(

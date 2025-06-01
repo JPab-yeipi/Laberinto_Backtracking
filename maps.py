@@ -148,9 +148,12 @@ MAZE_6 = [
     "###################################"
 ]
 
-MAZE_7 = []
+def Random_maze():
+    pass
 
-MAZE_8 = []
+def your_maze():
+    pass
+
 
 MAZE_DICC = {
 
@@ -160,6 +163,6 @@ MAZE_DICC = {
     "Maze 4": MAZE_4,
     "Maze 5": MAZE_5,
     "Maze 6": MAZE_6,
-    "Maze 7": MAZE_7,
-    "Maze 8": MAZE_8
+    "Random Maze": Random_maze,
+    "Your Maze": your_maze
 }
