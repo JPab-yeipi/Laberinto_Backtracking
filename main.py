@@ -1,4 +1,4 @@
-'''Version 4.5    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
+'''Version 4.6    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
 #Librerias ----------------------------------------------------------------------------------------------
 import time
 import maps
@@ -21,20 +21,20 @@ fuente = ("Arial Black", 20)
 colores = ["Rojo", "Azul", "Amarillo", "Verde", "Morado", "Naranja"]
 #Distribucion de botones para su respectiva ventana:
 botones_MenuPrincipal = [
-        ("Maze 1", 1, 1, "Verde"), ("Maze 2", 2, 1, "Verde"),
-        ("Maze 3", 1, 2, "Rojo"), ("Maze 4", 2, 2, "Rojo"),
-        ("Maze 5", 1, 3, "Azul"), ("Maze 6", 2, 3, "Azul"),
-        ("Random Maze", 1, 4, "Morado"),("Your Maze", 2, 4, "Naranja")
+        ("Laberinto 1", 1, 1, "Verde"), ("Laberinto 2", 2, 1, "Verde"),
+        ("Laberinto 3", 1, 2, "Rojo"), ("Laberinto 4", 2, 2, "Rojo"),
+        ("Laberinto 5", 1, 3, "Azul"), ("Laberinto 6", 2, 3, "Azul"),
+        ("Laberinto random", 1, 4, "Morado"),("Tu Laberinto", 2, 4, "Naranja")
 ]
 botones_VentanaLaberinto = [
-        ("Return", 1, 1, "Rojo"), ("Start", 2, 1, "Azul"), 
-        ("Restart", 3, 1, "Verde")
+        ("Regresar", 1, 1, "Rojo"), ("Empezar", 2, 1, "Azul"), 
+        ("Reiniciar", 3, 1, "Verde")
 ]
 botones_random = [
-        ("Easy", 1, 1, "Verde"), ("Medium", 2, 1, "Naranja"), ("Hard", 3, 1, "Rojo")
+        ("Facil", 1, 1, "Verde"), ("Normal", 2, 1, "Naranja"), ("Dificil", 3, 1, "Rojo")
 ]
-boton_create = [("Create", 0, 0, "Morado")]
-boton_aviso = [("Return", 0, 0, "Rojo")]
+boton_create = [("Crear", 0, 0, "Morado")]
+boton_aviso = [("Regresar", 0, 0, "Rojo")]
 
 #Funciones ----------------------------------------------------------------------------------------------
 #Funcion para dibujar cuadrados:
@@ -148,14 +148,14 @@ def crear_random_desde_ajustes(alto, ancho, bif, dificultad, ventana_a_cerrar=No
     lab = maps.crear_random_maze(alto, ancho, porcentaje_libres=dificultad, bifurcaciones=bif)
 
     # Inserta laberinto en el diccionario
-    maps.MAZE_DICC["Random Maze"] = lab
+    maps.MAZE_DICC["Laberinto random"] = lab
 
     # Cierra ventana anterior 
     if ventana_a_cerrar:
         ventana_a_cerrar.destroy()
 
     # Abre la ventana de laberinto con el nuevo laberinto random
-    crear_ventana_laberinto("Random Maze")
+    crear_ventana_laberinto("Laberinto random")
 
 #Funcion para crear la ventana donde se mostrara el laberinto y su informacion/resolucion:
 def crear_ventana_laberinto(nombre_laberinto):
@@ -504,10 +504,10 @@ def crear_ventana_laberinto(nombre_laberinto):
 
         def al_soltar(event, btn=texto):
             info = botones_ids[btn]
-            if btn == "Start" and not info["habilitado"]:
+            if btn == "Empezar" and not info["habilitado"]:
                 return
 
-            if btn != "Start":
+            if btn != "Empezar":
                 canvas.itemconfig(info["imagen"], image=botones_off[info["color"]])
                 canvas.itemconfig(info["texto"], fill="white")
                 canvas.move(info["texto"], 0, -6)
@@ -516,15 +516,15 @@ def crear_ventana_laberinto(nombre_laberinto):
                 info["habilitado"] = False
 
             #Funcion de boton dependiendo al nombre:
-            if btn == "Return":
+            if btn == "Regresar":
                 ventana_laberinto.destroy()
                 menu_principal()
 
-            elif btn == "Start":
+            elif btn == "Empezar":
                 if not estado_animacion["activa"]:
                     mostrar_laberinto(nombre_laberinto, turtle, estado_animacion)
 
-            elif btn == "Restart":
+            elif btn == "Reiniciar":
                 ventana_laberinto.destroy()
                 crear_ventana_laberinto(nombre_laberinto)
 
@@ -537,7 +537,7 @@ def crear_ventana_laberinto(nombre_laberinto):
 #Funcion que crea la ventana de ajustes para crear el laberinto random:
 def ventana_random_Maze():
     ventana_random = tk.Tk()
-    ventana_random.title('Random Maze Settings')
+    ventana_random.title('Ajustes para laberinto random')
     #Abre la ventana al frente y al centro de la pantalla
     screen_w = ventana_random.winfo_screenwidth()
     screen_h = ventana_random.winfo_screenheight()
@@ -593,16 +593,16 @@ def ventana_random_Maze():
             canvas_dificultad.move(txt_id, 0, 6)
             canvas_dificultad.move(sombra_id, 0, 6)
             niveles_dificultad = {
-                "Easy": 0.50,
-                "Medium": 0.35,
-                "Hard": 0.20
+                "Facil": 0.50,
+                "Normal": 0.35,
+                "Dificil": 0.20
             }
             estado_seleccion["actual_nombre"] = nombre_boton
             estado_seleccion["actual_valor"] = niveles_dificultad.get(nombre_boton)
 
             #Liberar botón Create si sigue bloqueado
-            if "Create" in botones_ids:
-                img_c, txt_c, sombra_c, col_c = botones_ids["Create"]
+            if "Crear" in botones_ids:
+                img_c, txt_c, sombra_c, col_c = botones_ids["Crear"]
                 if canvas_create.itemcget(txt_c, "fill") == "gray":
                     canvas_create.itemconfig(img_c, image=botones_off[col_c])
                     canvas_create.itemconfig(txt_c, fill="white")
@@ -670,11 +670,11 @@ def ventana_random_Maze():
 
     #Función de creacion del laberinto con un mensaje en la terminal con los ajustes elegidos:
     def crear_laberinto():
-        dificultad = estado_seleccion["actual_valor"]
-        alto = slider_alto.get()
-        ancho = slider_ancho.get()
-        bif = slider_bif.get()
-        print(f"Generando laberinto con dificultad={dificultad}, alto={alto}, ancho={ancho}, bifurcaciones={bif}")
+        #dificultad = estado_seleccion["actual_valor"]
+        #alto = slider_alto.get()
+        #ancho = slider_ancho.get()
+        #bif = slider_bif.get()
+        #print(f"Generando laberinto con dificultad={dificultad}, alto={alto}, ancho={ancho}, bifurcaciones={bif}")
         crear_random_desde_ajustes(
             alto=slider_alto.get(),
             ancho=slider_ancho.get(),
@@ -762,7 +762,7 @@ def aviso_laberinto_vacio():
             canvas.move(info["sombra"], 0, -6)
 
             #con el boton de return se regresa al menu principal
-            if btn == "Return":
+            if btn == "Regresar":
                 ventana_aviso.destroy()
                 menu_principal()
 
@@ -840,14 +840,14 @@ def menu_principal():
             canvas.itemconfig(txt, fill="white")
             canvas.move(txt, 0, -6)
             canvas.move(sombra, 0, -6)
-            if nombre == "Random Maze":
+            if nombre == "Laberinto random":
                 abrir_ventana_random()
-            elif nombre == "Your Maze":
+            elif nombre == "Tu Laberinto":
                 if maps.YOUR_MAZE == []:
                     menu_principal.destroy()
                     aviso_laberinto_vacio()
                 else:
-                    abrir_ventana_laberinto("Your Maze")
+                    abrir_ventana_laberinto("Tu Laberinto")
             else:
                 abrir_ventana_laberinto(nombre)
 

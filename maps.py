@@ -1,4 +1,4 @@
-'''Version 4.5    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
+'''Version 4.6    Autor: Jose Pablo Garcia Zamudio    Github: JPab-Dev'''
 #Librerias ----------------------------------------------------------------------------------------------
 import random
 import math
@@ -258,12 +258,12 @@ def crear_random_maze(alto, ancho, porcentaje_libres, bifurcaciones, seed=None, 
 
 #Diccionario de laberintos por nombre: --------------------------------------------------------------------------------
 MAZE_DICC = {
-    "Maze 1": MAZE_1,
-    "Maze 2": MAZE_2,
-    "Maze 3": MAZE_3,
-    "Maze 4": MAZE_4,
-    "Maze 5": MAZE_5,
-    "Maze 6": MAZE_6,
-    "Random Maze": [],
-    "Your Maze": YOUR_MAZE
+    "Laberinto 1": MAZE_1,
+    "Laberinto 2": MAZE_2,
+    "Laberinto 3": MAZE_3,
+    "Laberinto 4": MAZE_4,
+    "Laberinto 5": MAZE_5,
+    "Laberinto 6": MAZE_6,
+    "Laberinto random": [],
+    "Tu Laberinto": YOUR_MAZE
 }
