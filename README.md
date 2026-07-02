@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Images/banner.png" width="100%">
+<img src="Images/banner.png" width="60%">
 
 # 🐢 A-MAZE-ZING
 
@@ -40,7 +40,7 @@ Features include:
 - 🎨 Animated custom buttons
 
 <p align="center">
-  <img src="Images/menu.png" width="900">
+  <img src="Images/menu.png" width="600">
 </p>
 
 ---
@@ -102,7 +102,7 @@ Supported symbols:
 This makes it easy to test your own maze designs without modifying the main application.
 
 <p align="center">
-  <img src="Images/your_maze.png" width="900">
+  <img src="Images/your_maze.png" width="300">
 </p>
 
 ---
