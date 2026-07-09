@@ -205,7 +205,7 @@ No additional libraries are required.
 Clone the repository:
 
 ```bash
-git clone https://github.com/JPab-yeipi/A-MAZE-ZING.git
+git clone https://github.com/jpablo-gz/A-MAZE-ZING.git
 ```
 
 Go into the project:
